@@ -48,7 +48,7 @@ public class ItemDaoJDBCImpl implements ItemDao {
     }
 
     @Override
-    public String create(final Item item) {
+    public String create(final String name, final String description) {
         return null;
     }
 }

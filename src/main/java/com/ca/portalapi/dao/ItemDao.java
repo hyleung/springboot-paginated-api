@@ -12,5 +12,5 @@ public interface ItemDao {
     List<Item> list();
     Optional<Item> get(String uuid);
     int delete(String uuid);
-    String create(Item item);
+    String create(String name, String description);
 }
