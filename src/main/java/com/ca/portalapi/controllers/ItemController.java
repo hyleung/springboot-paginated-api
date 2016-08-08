@@ -58,9 +58,9 @@ public class ItemController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaTypes.HAL_JSON_VALUE)
-    public Resources<ItemRep> listHalJson(@RequestParam(value = "pageSize", required = false) Integer pageSize,
-                                          @RequestParam(value = "lastSeen", required = false) Integer lastSeen,
-                                          @RequestParam(value = "prev", required = false) String prev) throws MalformedURLException, UnsupportedEncodingException {
+    public Resources<ItemRep> listHalJson(@RequestParam(value = "ps", required = false) Integer pageSize,
+                                          @RequestParam(value = "l", required = false) Integer lastSeen,
+                                          @RequestParam(value = "p", required = false) String prev) throws MalformedURLException, UnsupportedEncodingException {
         final List<ItemRep> items = list(pageSize, lastSeen);
         final Resources<ItemRep> result = new Resources<>(items);
         result.add(linkTo(methodOn(ItemController.class).readFormHal()).withRel("create-form"));
@@ -74,23 +74,31 @@ public class ItemController {
                     .map(ItemRep::getRecordId)
                     .orElseThrow(RuntimeException::new);
             //encode the prev URI
-            String uri = "?pageSize=" + pageSize;
-            if (lastSeen != null) {
-                uri += "&lastSeen=" + lastSeen;
-            }
-            if (prev != null) {
-                uri += "&prev=" + prev;
-            }
-            final String encodedPrev = URLEncoder.encode(uri, "UTF-8");
+            final String encodedPrev = encodeParams(pageSize, lastSeen, prev);
             result.add(linkTo(methodOn(ItemController.class)
                     .listHalJson(pageSize, min, encodedPrev))
                     .withRel("next"));
             if (prev != null) {
-                final String decoded = URLDecoder.decode(prev, "UTF-8");
+                final String decoded = decodeParams(prev);
                 result.add(BasicLinkBuilder.linkToCurrentMapping().slash("items" + decoded).withRel("prev"));
             }
         }
         return result;
+    }
+
+    private String decodeParams(final @RequestParam(value = "prev", required = false) String prev) throws UnsupportedEncodingException {
+        return URLDecoder.decode(prev, "UTF-8");
+    }
+
+    private String encodeParams(final @RequestParam(value = "pageSize", required = false) Integer pageSize, final @RequestParam(value = "lastSeen", required = false) Integer lastSeen, final @RequestParam(value = "prev", required = false) String prev) throws UnsupportedEncodingException {
+        String uri = "?ps=" + pageSize;
+        if (lastSeen != null) {
+            uri += "&l=" + lastSeen;
+        }
+        if (prev != null) {
+            uri += "&p=" + prev;
+        }
+        return URLEncoder.encode(uri, "UTF-8");
     }
 
     private List<ItemRep> list(final Integer pageSize, final Integer lastSeen) {
