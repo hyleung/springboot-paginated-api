@@ -11,6 +11,6 @@ import java.util.Optional;
 public interface ItemDao {
     List<Item> list();
     Optional<Item> get(String uuid);
-    void delete(String uuid);
+    int delete(String uuid);
     String create(Item item);
 }

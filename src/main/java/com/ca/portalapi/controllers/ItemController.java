@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.websocket.server.PathParam;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -52,5 +53,13 @@ public class ItemController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaTypes.HAL_JSON_VALUE)
     public Resource<ItemRep> getHalJson(@PathVariable("id") final String id) {
         return new Resource<>(getJson(id));
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public void delete(@PathParam("id") final String id) {
+        int count = dao.delete(id);
+        if (count == 0) {
+            throw new ResourceNotFound();
+        }
     }
 }

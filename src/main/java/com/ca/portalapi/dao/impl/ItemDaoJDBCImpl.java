@@ -42,8 +42,9 @@ public class ItemDaoJDBCImpl implements ItemDao {
     }
 
     @Override
-    public void delete(final String uuid) {
-
+    public int delete(final String uuid) {
+        String command = "DELETE FROM ITEMS WHERE UUID = ?";
+        return jdbcTemplate.update(command, uuid);
     }
 
     @Override
