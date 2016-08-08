@@ -1,0 +1,31 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: leuho02
+      changes:
+        - createTable:
+            tableName: ITEMS
+            columns:
+              - column:
+                 name: ID
+                 type: bigint
+                 autoIncrement: true
+                 constraints:
+                   primaryKey: true
+                   nullable: false
+              - column:
+                  name: UUID
+                  type: char(36)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: SEQ_NO
+                  type: bigint
+              - column:
+                  name: NAME
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: DESCRIPTION
+                  type: text
