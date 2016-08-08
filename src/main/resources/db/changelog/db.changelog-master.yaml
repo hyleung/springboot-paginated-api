@@ -19,9 +19,6 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: SEQ_NO
-                  type: bigint
-              - column:
                   name: NAME
                   type: varchar(255)
                   constraints:
@@ -29,3 +26,147 @@ databaseChangeLog:
               - column:
                   name: DESCRIPTION
                   type: text
+  - changeSet:
+      id: 2
+      author: hyleung
+      changes:
+        - insert:
+            tableName: ITEMS
+            columns:
+              - column:
+                  name: UUID
+                  type: char(36)
+                  value: 9a5643a2-5a8c-11e6-8b77-86f30ca893d3
+              - column:
+                  name: NAME
+                  type: varchar(255)
+                  value: "ONE"
+              - column:
+                  name: DESCRIPTION
+                  value: "Description ONE"
+        - insert:
+            tableName: ITEMS
+            columns:
+              - column:
+                  name: UUID
+                  type: char(36)
+                  value: 9a5651da-5a8c-11e6-8b77-86f30ca893d3
+              - column:
+                  name: NAME
+                  type: varchar(255)
+                  value: "TWO"
+              - column:
+                  name: DESCRIPTION
+                  value: "Description TWO"
+        - insert:
+            tableName: ITEMS
+            columns:
+              - column:
+                  name: UUID
+                  type: char(36)
+                  value: 9a565464-5a8c-11e6-8b77-86f30ca893d3
+              - column:
+                  name: NAME
+                  type: varchar(255)
+                  value: "THREE"
+              - column:
+                  name: DESCRIPTION
+                  value: "Description THREE"
+        - insert:
+            tableName: ITEMS
+            columns:
+              - column:
+                  name: UUID
+                  type: char(36)
+                  value: 9a56570c-5a8c-11e6-8b77-86f30ca893d3
+              - column:
+                  name: NAME
+                  type: varchar(255)
+                  value: "FOUR"
+              - column:
+                  name: DESCRIPTION
+                  value: "Description FOUR"
+        - insert:
+            tableName: ITEMS
+            columns:
+              - column:
+                  name: UUID
+                  type: char(36)
+                  value: 9a565978-5a8c-11e6-8b77-86f30ca893d3
+              - column:
+                  name: NAME
+                  type: varchar(255)
+                  value: "FIVE"
+              - column:
+                  name: DESCRIPTION
+                  value: "Description FIVE"
+        - insert:
+            tableName: ITEMS
+            columns:
+              - column:
+                  name: UUID
+                  type: char(36)
+                  value: 9a565bd0-5a8c-11e6-8b77-86f30ca893d3
+              - column:
+                  name: NAME
+                  type: varchar(255)
+                  value: "SIX"
+              - column:
+                  name: DESCRIPTION
+                  value: "Description SIX"
+        - insert:
+            tableName: ITEMS
+            columns:
+              - column:
+                  name: UUID
+                  type: char(36)
+                  value: 9a565efa-5a8c-11e6-8b77-86f30ca893d3
+              - column:
+                  name: NAME
+                  type: varchar(255)
+                  value: "SEVEN"
+              - column:
+                  name: DESCRIPTION
+                  value: "Description SEVEN"
+        - insert:
+            tableName: ITEMS
+            columns:
+              - column:
+                  name: UUID
+                  type: char(36)
+                  value: 9a5665bc-5a8c-11e6-8b77-86f30ca893d3
+              - column:
+                  name: NAME
+                  type: varchar(255)
+                  value: "EIGHT"
+              - column:
+                  name: DESCRIPTION
+                  value: "Description EIGHT"
+        - insert:
+            tableName: ITEMS
+            columns:
+              - column:
+                  name: UUID
+                  type: char(36)
+                  value: 9a566878-5a8c-11e6-8b77-86f30ca893d3
+              - column:
+                  name: NAME
+                  type: varchar(255)
+                  value: "NINE"
+              - column:
+                  name: DESCRIPTION
+                  value: "Description NINE"
+        - insert:
+            tableName: ITEMS
+            columns:
+              - column:
+                  name: UUID
+                  type: char(36)
+                  value: 0b807fa2-5a8d-11e6-8b77-86f30ca893d3
+              - column:
+                  name: NAME
+                  type: varchar(255)
+                  value: "TEN"
+              - column:
+                  name: DESCRIPTION
+                  value: "Description TEN"
