@@ -2,6 +2,7 @@ package com.ca.portalapi.controllers;
 
 import com.ca.portalapi.dao.ItemDao;
 import com.ca.portalapi.domain.Item;
+import com.ca.portalapi.domain.PagedResult;
 import com.ca.portalapi.exceptions.ResourceNotFound;
 import com.ca.portalapi.representations.CreateItemForm;
 import com.ca.portalapi.representations.ItemRep;
@@ -10,18 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.hateoas.Link;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.Resources;
 import org.springframework.hateoas.mvc.BasicLinkBuilder;
 import org.springframework.hateoas.mvc.ControllerLinkBuilder;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.swing.text.html.Option;
 import javax.websocket.server.PathParam;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -31,7 +28,6 @@ import java.net.URLEncoder;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -51,7 +47,7 @@ public class ItemController {
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<ItemRep> listJson() {
         return dao
-                .list(Optional.empty(), Optional.empty())
+                .list()
                 .stream()
                 .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(), item.getDescription()))
                 .collect(Collectors.toList());
@@ -61,12 +57,22 @@ public class ItemController {
     public Resources<ItemRep> listHalJson(@RequestParam(value = "ps", required = false) Integer pageSize,
                                           @RequestParam(value = "l", required = false) Integer lastSeen,
                                           @RequestParam(value = "p", required = false) String prev) throws MalformedURLException, UnsupportedEncodingException {
-        final List<ItemRep> items = list(pageSize, lastSeen);
-        final Resources<ItemRep> result = new Resources<>(items);
-        result.add(linkTo(methodOn(ItemController.class).readFormHal()).withRel("create-form"));
-        final ControllerLinkBuilder selfRelBuilder = linkTo(methodOn(ItemController.class).listHalJson(pageSize, lastSeen, prev));
-        result.add(selfRelBuilder.withSelfRel());
-        if (pageSize != null) {
+        Resources<ItemRep> result;
+        List<ItemRep> items;
+        if (pageSize == null) {
+            items = dao.list()
+                    .stream()
+                    .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(), item.getDescription()))
+                    .collect(Collectors.toList());
+            result = new Resources<>(items);
+        } else {
+            final PagedResult<Item> itemPagedResult = dao.list(pageSize, Optional.ofNullable(lastSeen));
+            items = itemPagedResult
+                    .getResult()
+                    .stream()
+                    .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(), item.getDescription()))
+                    .collect(Collectors.toList());
+            result = new Resources<>(items);
             log.debug("Fetching page {}, last_seen_id = {}", pageSize, lastSeen);
             //compute min last seen id
             final Integer min = items.stream()
@@ -83,6 +89,9 @@ public class ItemController {
                 result.add(BasicLinkBuilder.linkToCurrentMapping().slash("items" + decoded).withRel("prev"));
             }
         }
+
+        result.add(linkTo(methodOn(ItemController.class).readFormHal()).withRel("create-form"));
+        result.add(linkTo(methodOn(ItemController.class).listHalJson(pageSize, lastSeen, prev)).withSelfRel());
         return result;
     }
 
@@ -99,14 +108,6 @@ public class ItemController {
             uri += "&p=" + prev;
         }
         return URLEncoder.encode(uri, "UTF-8");
-    }
-
-    private List<ItemRep> list(final Integer pageSize, final Integer lastSeen) {
-        return dao
-                .list(Optional.ofNullable(pageSize), Optional.ofNullable(lastSeen))
-                .stream()
-                .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(), item.getDescription()))
-                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
