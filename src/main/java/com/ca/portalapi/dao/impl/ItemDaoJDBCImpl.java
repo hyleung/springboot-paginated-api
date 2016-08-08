@@ -17,8 +17,30 @@ public class ItemDaoJDBCImpl implements ItemDao {
     @Autowired
     JdbcTemplate jdbcTemplate;
     @Override
-    public List<Item> list() {
-        String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS";
+    public List<Item> list(final Optional<Integer> pageSize, final Optional<Integer> lastSeen) {
+        if (pageSize.isPresent() && lastSeen.isPresent()) {
+            String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS WHERE ID < ? ORDER BY ID DESC LIMIT ?";
+            return jdbcTemplate.query(query,
+                    (rs, rownum) -> new Item(
+                            rs.getInt("ID"),
+                            rs.getString("UUID"),
+                            rs.getString("NAME"),
+                            rs.getString("DESCRIPTION")),
+                    lastSeen.get(),
+                    pageSize.get()
+            );
+        } else if (pageSize.isPresent()) {
+            String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS ORDER BY ID DESC LIMIT ?";
+            return jdbcTemplate.query(query,
+                    (rs, rownum) -> new Item(
+                            rs.getInt("ID"),
+                            rs.getString("UUID"),
+                            rs.getString("NAME"),
+                            rs.getString("DESCRIPTION")),
+                    pageSize.get()
+            );
+        } else {
+        String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS ORDER BY ID DESC";
         return jdbcTemplate.query(query,
                 (rs, rownum) -> new Item(
                         rs.getInt("ID"),
@@ -26,6 +48,7 @@ public class ItemDaoJDBCImpl implements ItemDao {
                         rs.getString("NAME"),
                         rs.getString("DESCRIPTION"))
                 );
+        }
     }
 
     @Override
