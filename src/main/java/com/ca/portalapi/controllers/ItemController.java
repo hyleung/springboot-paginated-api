@@ -74,17 +74,12 @@ public class ItemController {
                     .collect(Collectors.toList());
             result = new Resources<>(items);
             log.debug("Fetching page {}, last_seen_id = {}", pageSize, lastSeen);
-            //compute min last seen id
-            final Integer min = items.stream()
-                    .min(Comparator.comparingInt(ItemRep::getRecordId))
-                    .map(ItemRep::getRecordId)
-                    .orElseThrow(RuntimeException::new);
             //if we're not on the last page, add a link to "next"
-            if (min != itemPagedResult.getMinId()) {
+            if (!itemPagedResult.isLastPage()) {
                 //encode the prev URI
                 final String encodedPrev = encodeParams(pageSize, lastSeen, prev);
                 result.add(linkTo(methodOn(ItemController.class)
-                        .listHalJson(pageSize, min, encodedPrev))
+                        .listHalJson(pageSize, itemPagedResult.getLastSeen(), encodedPrev))
                         .withRel("next"));
             }
             if (prev != null) {

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,36 +34,32 @@ public class ItemDaoJDBCImpl implements ItemDao {
     @Override
     public PagedResult<Item> list(final Integer pageSize, final Optional<Integer> lastSeen) {
         final List<Item> items;
-        if (lastSeen.isPresent()) {
-            String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS WHERE ID < ? ORDER BY ID DESC LIMIT ?";
-            items = jdbcTemplate.query(query,
-                    (rs, rownum) -> new Item(
-                            rs.getInt("ID"),
-                            rs.getString("UUID"),
-                            rs.getString("NAME"),
-                            rs.getString("DESCRIPTION")),
-                    lastSeen.get(),
-                    pageSize
-            );
-        } else {
-            String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS ORDER BY ID DESC LIMIT ?";
-            items = jdbcTemplate.query(query,
-                    (rs, rownum) -> new Item(
-                            rs.getInt("ID"),
-                            rs.getString("UUID"),
-                            rs.getString("NAME"),
-                            rs.getString("DESCRIPTION")),
-                    pageSize
-            );
-        }
-        String query = "SELECT MIN(ID) AS MIN_ID FROM ITEMS";
-        final Integer minId = jdbcTemplate.query(query,
+        final Integer maxId = lastSeen.orElse(Integer.MAX_VALUE);
+        String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS WHERE ID < ? ORDER BY ID DESC LIMIT ?";
+        items = jdbcTemplate.query(query,
+                (rs, rownum) -> new Item(
+                        rs.getInt("ID"),
+                        rs.getString("UUID"),
+                        rs.getString("NAME"),
+                        rs.getString("DESCRIPTION")),
+                maxId,
+                pageSize
+        );
+
+        String minQuery = "SELECT MIN(ID) AS MIN_ID FROM ITEMS";
+        final Integer minId = jdbcTemplate.query(minQuery,
                 (rs, rowNum) -> rs.getInt("MIN_ID"))
                 .stream()
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
-        final PagedResult<Item> result = new PagedResult<>(items);
-        result.setMinId(minId);
+
+        //compute lastSeenId
+        final Integer lastSeenId = items.stream()
+                .min(Comparator.comparingInt(Item::getId))
+                .map(Item::getId)
+                .orElseThrow(RuntimeException::new);
+
+        final PagedResult<Item> result = new PagedResult<>(items,lastSeenId, minId == lastSeenId);
         return  result;
     }
 

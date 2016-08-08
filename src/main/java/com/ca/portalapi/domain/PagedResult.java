@@ -7,25 +7,24 @@ import java.util.List;
  */
 public class PagedResult<T> {
     private List<T> result;
-    private Integer minId;
+    private boolean lastPage;
+    private Integer lastSeen;
 
-    public PagedResult(final List<T> result) {
+    public PagedResult(final List<T> result, final Integer lastSeen, final boolean lastPage) {
         this.result = result;
+        this.lastSeen = lastSeen;
+        this.lastPage = lastPage;
     }
 
     public List<T> getResult() {
         return result;
     }
 
-    public void setResult(final List<T> result) {
-        this.result = result;
+    public Integer getLastSeen() {
+        return lastSeen;
     }
 
-    public Integer getMinId() {
-        return minId;
-    }
-
-    public void setMinId(final Integer minId) {
-        this.minId = minId;
+    public boolean isLastPage() {
+        return lastPage;
     }
 }
