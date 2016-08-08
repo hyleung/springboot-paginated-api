@@ -79,11 +79,14 @@ public class ItemController {
                     .min(Comparator.comparingInt(ItemRep::getRecordId))
                     .map(ItemRep::getRecordId)
                     .orElseThrow(RuntimeException::new);
-            //encode the prev URI
-            final String encodedPrev = encodeParams(pageSize, lastSeen, prev);
-            result.add(linkTo(methodOn(ItemController.class)
-                    .listHalJson(pageSize, min, encodedPrev))
-                    .withRel("next"));
+            //if we're not on the last page, add a link to "next"
+            if (min != itemPagedResult.getMinId()) {
+                //encode the prev URI
+                final String encodedPrev = encodeParams(pageSize, lastSeen, prev);
+                result.add(linkTo(methodOn(ItemController.class)
+                        .listHalJson(pageSize, min, encodedPrev))
+                        .withRel("next"));
+            }
             if (prev != null) {
                 final String decoded = decodeParams(prev);
                 result.add(BasicLinkBuilder.linkToCurrentMapping().slash("items" + decoded).withRel("prev"));

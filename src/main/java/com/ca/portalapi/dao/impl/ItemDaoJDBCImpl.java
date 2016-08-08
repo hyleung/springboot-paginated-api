@@ -32,10 +32,10 @@ public class ItemDaoJDBCImpl implements ItemDao {
 
     @Override
     public PagedResult<Item> list(final Integer pageSize, final Optional<Integer> lastSeen) {
-        final List<Item> result;
+        final List<Item> items;
         if (lastSeen.isPresent()) {
             String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS WHERE ID < ? ORDER BY ID DESC LIMIT ?";
-            result = jdbcTemplate.query(query,
+            items = jdbcTemplate.query(query,
                     (rs, rownum) -> new Item(
                             rs.getInt("ID"),
                             rs.getString("UUID"),
@@ -46,7 +46,7 @@ public class ItemDaoJDBCImpl implements ItemDao {
             );
         } else {
             String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS ORDER BY ID DESC LIMIT ?";
-            result = jdbcTemplate.query(query,
+            items = jdbcTemplate.query(query,
                     (rs, rownum) -> new Item(
                             rs.getInt("ID"),
                             rs.getString("UUID"),
@@ -55,7 +55,15 @@ public class ItemDaoJDBCImpl implements ItemDao {
                     pageSize
             );
         }
-        return new PagedResult<>(result);
+        String query = "SELECT MIN(ID) AS MIN_ID FROM ITEMS";
+        final Integer minId = jdbcTemplate.query(query,
+                (rs, rowNum) -> rs.getInt("MIN_ID"))
+                .stream()
+                .findFirst()
+                .orElseThrow(RuntimeException::new);
+        final PagedResult<Item> result = new PagedResult<>(items);
+        result.setMinId(minId);
+        return  result;
     }
 
     @Override
