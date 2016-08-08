@@ -2,14 +2,13 @@ package com.ca.portalapi.dao.impl;
 
 import com.ca.portalapi.dao.ItemDao;
 import com.ca.portalapi.domain.Item;
-import com.ca.portalapi.domain.PagedResult;
+import com.ca.portalapi.controllers.pagination.PagedResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by leuho02 on 2016-08-04.
@@ -32,35 +31,44 @@ public class ItemDaoJDBCImpl implements ItemDao {
     }
 
     @Override
-    public PagedResult<Item> list(final Integer pageSize, final Optional<Integer> lastSeen) {
-        final List<Item> items;
-        final Integer maxId = lastSeen.orElse(Integer.MAX_VALUE);
+    public List<Item> list(final Integer pageSize, final Optional<Integer> lastSeen) {
         String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS WHERE ID < ? ORDER BY ID DESC LIMIT ?";
-        items = jdbcTemplate.query(query,
+        return jdbcTemplate.query(query,
                 (rs, rownum) -> new Item(
                         rs.getInt("ID"),
                         rs.getString("UUID"),
                         rs.getString("NAME"),
                         rs.getString("DESCRIPTION")),
-                maxId,
+                lastSeen.orElse(Integer.MAX_VALUE),
                 pageSize
         );
+    }
 
+    @Override
+    public Integer getMinId() {
         String minQuery = "SELECT MIN(ID) AS MIN_ID FROM ITEMS";
-        final Integer minId = jdbcTemplate.query(minQuery,
+        return jdbcTemplate.query(minQuery,
                 (rs, rowNum) -> rs.getInt("MIN_ID"))
                 .stream()
                 .findFirst()
                 .orElseThrow(RuntimeException::new);
+    }
 
-        //compute lastSeenId
-        final Integer lastSeenId = items.stream()
-                .min(Comparator.comparingInt(Item::getId))
-                .map(Item::getId)
-                .orElseThrow(RuntimeException::new);
 
-        final PagedResult<Item> result = new PagedResult<>(items,lastSeenId, minId == lastSeenId);
-        return  result;
+    @Override
+    public List<Item> listPrevious(final Integer pageSize, final Integer lastSeen) {
+        int limit = pageSize + 1;
+        String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS WHERE ID >= ? ORDER BY ID ASC LIMIT ?";
+        final List<Item> items = jdbcTemplate.query(query,
+                (rs, rownum) -> new Item(
+                        rs.getInt("ID"),
+                        rs.getString("UUID"),
+                        rs.getString("NAME"),
+                        rs.getString("DESCRIPTION")),
+                lastSeen,
+                limit);
+        Collections.reverse(items);
+        return items;
     }
 
     @Override
