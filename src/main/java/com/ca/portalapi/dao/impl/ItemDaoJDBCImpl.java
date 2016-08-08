@@ -84,6 +84,12 @@ public class ItemDaoJDBCImpl implements ItemDao {
 
     @Override
     public String create(final String name, final String description) {
-        return null;
+        String uuid = UUID.randomUUID().toString();
+        String command = "INSERT INTO ITEMS(UUID, NAME, DESCRIPTION) VALUES(?, ?, ?)";
+        int result = jdbcTemplate.update(command, uuid, name, description);
+        if (result == 0) {
+            throw new RuntimeException("Ruh-roh");
+        }
+        return uuid;
     }
 }
