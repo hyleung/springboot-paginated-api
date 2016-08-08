@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by leuho02 on 2016-08-04.
@@ -28,8 +29,16 @@ public class ItemDaoJDBCImpl implements ItemDao {
     }
 
     @Override
-    public Item get(final String uuid) {
-        return null;
+    public Optional<Item> get(final String uuid) {
+        String query = "SELECT ID, UUID, NAME, DESCRIPTION FROM ITEMS WHERE UUID = ?";
+        return jdbcTemplate.query(query,
+                (rs, rownum) -> new Item(
+                        rs.getInt("ID"),
+                        rs.getString("UUID"),
+                        rs.getString("NAME"),
+                        rs.getString("DESCRIPTION")),
+                uuid
+        ).stream().findFirst();
     }
 
     @Override
