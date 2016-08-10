@@ -3,10 +3,12 @@ package com.ca.portalapi.representations;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.hateoas.ResourceSupport;
+import org.springframework.hateoas.core.Relation;
 
 /**
  * Created by leuho02 on 2016-08-04.
  */
+@Relation(collectionRelation = "items")
 public class ItemRep extends ResourceSupport {
     @JsonProperty("id")
     private final String uuid;

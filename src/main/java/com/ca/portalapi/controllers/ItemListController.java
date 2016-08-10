@@ -34,6 +34,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 @EnableAutoConfiguration
 @RequestMapping("/items")
+@CrossOrigin(origins = "*")
 public class ItemListController {
     private static final Logger log = LoggerFactory.getLogger(ItemListController.class);
     public static final String PREVIOUS_ACTION = "previous";
