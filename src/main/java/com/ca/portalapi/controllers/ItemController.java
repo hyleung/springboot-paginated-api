@@ -11,10 +11,7 @@ import org.springframework.hateoas.ExposesResourceFor;
 import org.springframework.hateoas.MediaTypes;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
@@ -26,6 +23,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @EnableAutoConfiguration
 @RequestMapping("/items")
 @ExposesResourceFor(ItemRep.class)
+@CrossOrigin("*")
 public class ItemController {
     private static final Logger log = LoggerFactory.getLogger(ItemController.class);
     @Autowired
