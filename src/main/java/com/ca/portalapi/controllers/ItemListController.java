@@ -74,8 +74,8 @@ public class ItemListController {
                     .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(), item.getDescription()))
                     .collect(Collectors.toList());
             items.forEach(rep -> rep.add(
-                    entityLinks.linkFor(ItemRep.class, rep.getUUID()).withSelfRel(),
-                    entityLinks.linkFor(ItemRep.class, rep.getUUID()).withRel("delete")));
+                    entityLinks.linkForSingleResource(ItemRep.class, rep.getUUID()).withSelfRel(),
+                    entityLinks.linkForSingleResource(ItemRep.class, rep.getUUID()).withRel("delete")));
             result = new Resources<>(items);
 
             paginatedResult
