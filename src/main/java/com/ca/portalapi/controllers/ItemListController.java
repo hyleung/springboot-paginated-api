@@ -13,8 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.hateoas.MediaTypes;
-import org.springframework.hateoas.Resources;
+import org.springframework.hateoas.*;
+import org.springframework.hateoas.core.ControllerEntityLinks;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +38,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 public class ItemListController {
     private static final Logger log = LoggerFactory.getLogger(ItemListController.class);
     public static final String PREVIOUS_ACTION = "previous";
+
+    @Autowired
+    EntityLinks entityLinks;
     @Autowired
     private ItemDao dao;
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -70,6 +73,9 @@ public class ItemListController {
                     .stream()
                     .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(), item.getDescription()))
                     .collect(Collectors.toList());
+            items.forEach(rep -> rep.add(
+                    entityLinks.linkFor(ItemRep.class, rep.getUUID()).withSelfRel(),
+                    entityLinks.linkFor(ItemRep.class, rep.getUUID()).withRel("delete")));
             result = new Resources<>(items);
 
             paginatedResult
