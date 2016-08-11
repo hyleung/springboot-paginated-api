@@ -6,43 +6,36 @@ var ListItem = React.createClass({
                 <bs.Row className="show-grid grid-data-row">
                     <bs.Col md={5}>{this.props.item.name}</bs.Col>
                     <bs.Col md={5} className="border-left">{this.props.item.description}</bs.Col>
-                    <bs.Col md={2} className="border-left"><ViewButton url={this.props.item._links["self"].href}/></bs.Col>
+                    <bs.Col md={1} className="border-left">
+                        <ViewButton url={this.props.item._links["self"].href}/>
+                    </bs.Col>
+                    <bs.Col md={1} className="border-left">
+                        <DeleteButton url={this.props.item._links["delete"].href} deleteHandler={this.props.refresh}/>
+                    </bs.Col>
                 </bs.Row>
                );
     }
 });
 
-var ListNavigation = React.createClass({
-    navLinks: function () {
-        var links = this.props.links;
-        var relName = this.props.relName;
-        var handleClick = function(href) {
-            ReactDOM.render(
-                    <List url={href}/>,
-                    document.getElementById('content')
-                    );
-        }
-        var result = [];
-        if (links['next'] != undefined) {
-            result.push(<bs.Pager.Item key='next' next onClick={handleClick.bind(this, links['next'].href)}>Next &rarr;</bs.Pager.Item>)
-        }
-        if (links['prev'] != undefined) {
-            result.push(<bs.Pager.Item  key='previous' previous onClick={handleClick.bind(this, links['prev'].href)}>&larr; Previous</bs.Pager.Item>)
-        }
-        console.log(result)
-        return result;
+var DeleteButton = React.createClass({
+    delete: function(url, handler) {
+        console.log("Deleting " + url);
+        $.ajax({
+            url: url,
+            method: 'DELETE',
+            success: function(data) {
+                handler();
+            },
+            error: function(xhr, status, err) {
+                console.error(url, status, err.toString());
+            }
+        });
     },
     render: function() {
         return (
-                <bs.Row className="show-grid grid-footer">
-                    <bs.Col md={12}>
-                        <bs.Pager className="grid-pager">
-                        {this.navLinks()}
-                        </bs.Pager>
-                    </bs.Col> 
-                </bs.Row>
+                <bs.Button onClick={this.delete.bind(this, this.props.url, this.props.deleteHandler)} bsStyle="danger" bsSize="xsmall" block>Delete</bs.Button>
                );
-        } 
+    }
 });
 
 var ViewButton = React.createClass({
@@ -97,6 +90,40 @@ var ViewButton = React.createClass({
                 </div>);
     },
 });
+
+var ListNavigation = React.createClass({
+    navLinks: function () {
+        var links = this.props.links;
+        var relName = this.props.relName;
+        var handleClick = function(href) {
+            ReactDOM.render(
+                    <List url={href}/>,
+                    document.getElementById('content')
+                    );
+        }
+        var result = [];
+        if (links['next'] != undefined) {
+            result.push(<bs.Pager.Item key='next' next onClick={handleClick.bind(this, links['next'].href)}>Next &rarr;</bs.Pager.Item>)
+        }
+        if (links['prev'] != undefined) {
+            result.push(<bs.Pager.Item  key='previous' previous onClick={handleClick.bind(this, links['prev'].href)}>&larr; Previous</bs.Pager.Item>)
+        }
+        console.log(result)
+        return result;
+    },
+    render: function() {
+        return (
+                <bs.Row className="show-grid grid-footer">
+                    <bs.Col md={12}>
+                        <bs.Pager className="grid-pager">
+                        {this.navLinks()}
+                        </bs.Pager>
+                    </bs.Col> 
+                </bs.Row>
+               );
+        } 
+});
+
 var List = React.createClass({
     loadList : function(url) {
         $.ajax({
@@ -130,9 +157,10 @@ var List = React.createClass({
     },
     render: function() {
         if (this.state.data) {
-        var listItems = this.state.data.map(function(item) {
+            var refresh = this.loadList.bind(this, this.props.url);
+            var listItems = this.state.data.map(function(item) {
             return (
-                    <ListItem item={item} key={item.id}/>
+                    <ListItem item={item} key={item.id} refresh={refresh}/>
                    );
         });
         return (
