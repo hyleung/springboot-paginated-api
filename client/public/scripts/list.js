@@ -107,8 +107,10 @@ var List = React.createClass({
             },
             success: function(data) {
                 console.log(data);
-                this.setState({data:data._embedded.items,
-                links:data._links});
+                if (data._embedded != undefined) {
+                    this.setState({data:data._embedded.items,
+                    links:data._links});
+                }
             }.bind(this),
             error: function(xhr, status, err) {
                 console.error(url, status, err.toString());

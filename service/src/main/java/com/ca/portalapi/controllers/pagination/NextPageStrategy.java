@@ -6,6 +6,7 @@ import com.ca.portalapi.domain.Item;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +18,9 @@ public class NextPageStrategy implements PaginationStrategy {
     public PagedResult<Item> getPaginatedResult(final ItemDao dao, final Integer pageSize, final Integer lastSeen) throws MalformedURLException, UnsupportedEncodingException {
         List<PagedResult.PagedResultLink> links = new ArrayList<>();
         List<Item> items = dao.list(pageSize, Optional.ofNullable(lastSeen));
+        if (items.isEmpty()) {
+            return new PagedResult<>(Collections.emptyList(), Collections.emptyList());
+        }
         final Integer minId = dao.getMinId();
         final Integer newLastSeenId = items.get(items.size() - 1).getId();
         //if we're not on the last page (i.e. our result set contains the item with min id)
