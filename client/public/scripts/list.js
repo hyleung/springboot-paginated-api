@@ -1,0 +1,154 @@
+var bs = ReactBootstrap;
+
+var ListItem = React.createClass({
+    render: function() {
+        return (   
+                <bs.Row className="show-grid grid-data-row">
+                    <bs.Col md={5}>{this.props.item.name}</bs.Col>
+                    <bs.Col md={5} className="border-left">{this.props.item.description}</bs.Col>
+                    <bs.Col md={2} className="border-left"><ViewButton url={this.props.item._links["self"].href}/></bs.Col>
+                </bs.Row>
+               );
+    }
+});
+
+var ListNavigation = React.createClass({
+    navLinks: function () {
+        var links = this.props.links;
+        var relName = this.props.relName;
+        var handleClick = function(href) {
+            ReactDOM.render(
+                    <List url={href}/>,
+                    document.getElementById('content')
+                    );
+        }
+        var result = [];
+        if (links['next'] != undefined) {
+            result.push(<bs.Pager.Item key='next' next onClick={handleClick.bind(this, links['next'].href)}>Next &rarr;</bs.Pager.Item>)
+        }
+        if (links['prev'] != undefined) {
+            result.push(<bs.Pager.Item  key='previous' previous onClick={handleClick.bind(this, links['prev'].href)}>&larr; Previous</bs.Pager.Item>)
+        }
+        console.log(result)
+        return result;
+    },
+    render: function() {
+        return (
+                <bs.Row className="show-grid grid-footer">
+                    <bs.Col md={12}>
+                        <bs.Pager className="grid-pager">
+                        {this.navLinks()}
+                        </bs.Pager>
+                    </bs.Col> 
+                </bs.Row>
+               );
+        } 
+});
+
+var ViewButton = React.createClass({
+    loadItem: function(url) {
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            headers: {
+                accept: 'application/hal+json'
+            },
+            success: function(data) {
+                this.setState({data:data});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(url, status, err.toString());
+            }.bind(this)
+        });
+    },
+    getInitialState : function() {
+        return {
+            showModal: false,
+            data: null
+        }
+    },
+    close : function() {
+        this.setState({showModal:false});
+    },
+    open : function() {
+        this.setState({showModal:true});
+        this.loadItem(this.props.url);
+    },
+    render: function() {
+        var item = this.state.data;
+        if (item != undefined) {
+        return (<div>
+                    <bs.Button onClick={this.open}  bsStyle="info" bsSize="xsmall" block>View</bs.Button>
+                    <bs.Modal show={this.state.showModal} onHide={this.close}>
+                            <bs.Modal.Header>
+                                <bs.Modal.Title>{item.name}</bs.Modal.Title>
+                            </bs.Modal.Header>
+                            <bs.Modal.Body>
+                            {item.description} 
+                            </bs.Modal.Body>
+                            <bs.Modal.Footer>
+                                <bs.Button onClick={this.close}>Close</bs.Button>
+                            </bs.Modal.Footer>
+                    </bs.Modal>
+                </div>);
+        }
+        return (<div>
+                    <bs.Button onClick={this.open}  bsStyle="info" bsSize="xsmall" block>View</bs.Button>
+                </div>);
+    },
+});
+var List = React.createClass({
+    loadList : function(url) {
+        $.ajax({
+            url: url,
+            dataType: 'json',
+            headers: {
+                accept: 'application/hal+json'
+            },
+            success: function(data) {
+                console.log(data);
+                this.setState({data:data._embedded.items,
+                links:data._links});
+            }.bind(this),
+            error: function(xhr, status, err) {
+                console.error(url, status, err.toString());
+            }.bind(this)
+        });
+    },
+    getInitialState: function() {
+        return {data:null,
+        links:[]};
+    },
+    componentDidMount: function() {
+        this.loadList(this.props.url);
+    },
+    componentWillReceiveProps: function(newProps) {
+        console.log(newProps);
+        this.loadList(newProps.url);
+    },
+    render: function() {
+        if (this.state.data) {
+        var listItems = this.state.data.map(function(item) {
+            return (
+                    <ListItem item={item} key={item.id}/>
+                   );
+        });
+        return (
+                <bs.Grid className="grid">
+                    <bs.Row className="show-grid grid-header">
+                        <bs.Col md={5}>Name</bs.Col>
+                        <bs.Col md={5}>Description</bs.Col>
+                    </bs.Row>    
+                    {listItems}
+                    <ListNavigation links={this.state.links}/>
+                </bs.Grid>
+               );
+        }
+        return <div>Loading...</div>
+    }
+});
+            
+ReactDOM.render(
+        <List url="http://localhost:8080/items?pageSize=4"/>,
+        document.getElementById('content')
+        );
