@@ -26,7 +26,7 @@ public class LiquibaseConfig {
     private String dbSchema;
     @Value("${db.user:root}")
     private String dbUser;
-    @Value("${db.password:7layer}")
+    @Value("${db.password:secret}")
     private String dbPassword;
     @Value("${db.driver:com.mysql.jdbc.Driver}")
     private String dbDriver;
