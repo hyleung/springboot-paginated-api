@@ -1,8 +1,8 @@
-package com.ca.portalapi.controllers;
+package com.example.controllers;
 
-import com.ca.portalapi.dao.ItemDao;
-import com.ca.portalapi.exceptions.ResourceNotFound;
-import com.ca.portalapi.representations.ItemRep;
+import com.example.dao.ItemDao;
+import com.example.exceptions.ResourceNotFound;
+import com.example.representations.ItemRep;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
- * Created by leuho02 on 2016-08-04.
+ * Created by hyleung on 2016-08-04.
  */
 @RestController
 @EnableAutoConfiguration

@@ -1,12 +1,10 @@
-package com.ca.portalapi.pagination
-
-import com.ca.portalapi.controllers.pagination.PagedResult
+package com.example.pagination
 
 import static org.assertj.core.api.Assertions.*
-import com.ca.portalapi.controllers.pagination.NextPageStrategy
-import com.ca.portalapi.controllers.pagination.PaginationStrategy
-import com.ca.portalapi.dao.ItemDao
-import com.ca.portalapi.domain.Item
+import com.example.controllers.pagination.NextPageStrategy
+import com.example.controllers.pagination.PaginationStrategy
+import com.example.dao.ItemDao
+import com.example.domain.Item
 import com.google.common.collect.Lists
 import spock.lang.Specification
 

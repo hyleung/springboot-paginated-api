@@ -1,7 +1,7 @@
-package com.ca.portalapi.domain;
+package com.example.domain;
 
 /**
- * Created by leuho02 on 2016-08-04.
+ * Created by hyleung on 2016-08-04.
  */
 public class Item {
     private final int id;

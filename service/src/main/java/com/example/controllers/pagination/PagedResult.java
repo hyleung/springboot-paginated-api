@@ -1,11 +1,11 @@
-package com.ca.portalapi.controllers.pagination;
+package com.example.controllers.pagination;
 
 import org.springframework.hateoas.Link;
 
 import java.util.List;
 
 /**
- * Created by leuho02 on 2016-08-05.
+ * Created by hyleung on 2016-08-05.
  */
 public class PagedResult<T> {
     private List<T> result;

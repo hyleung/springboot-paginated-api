@@ -1,9 +1,9 @@
-package com.ca.portalapi.representations;
+package com.example.representations;
 
 import org.springframework.hateoas.ResourceSupport;
 
 /**
- * Created by leuho02 on 2016-08-04.
+ * Created by hyleung on 2016-08-04.
  */
 public class CreateItemForm extends ResourceSupport {
     private String name;

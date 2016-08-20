@@ -1,4 +1,4 @@
-package com.ca.portalapi.liquibase;
+package com.example.liquibase;
 
 import liquibase.integration.spring.SpringLiquibase;
 import org.slf4j.Logger;
@@ -14,7 +14,7 @@ import javax.sql.DataSource;
 import java.sql.SQLException;
 
 /**
- * Created by leuho02 on 2016-08-04.
+ * Created by hyleung on 2016-08-04.
  */
 @Configuration
 public class LiquibaseConfig {

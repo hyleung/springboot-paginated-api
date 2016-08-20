@@ -1,7 +1,7 @@
-package com.ca.portalapi.controllers.pagination;
+package com.example.controllers.pagination;
 
-import com.ca.portalapi.dao.ItemDao;
-import com.ca.portalapi.domain.Item;
+import com.example.dao.ItemDao;
+import com.example.domain.Item;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by leuho02 on 2016-08-08.
+ * Created by hyleung on 2016-08-08.
  */
 public class PreviousPageStrategy implements PaginationStrategy {
     @Override

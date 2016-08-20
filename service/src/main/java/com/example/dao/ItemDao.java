@@ -1,13 +1,12 @@
-package com.ca.portalapi.dao;
+package com.example.dao;
 
-import com.ca.portalapi.domain.Item;
-import com.ca.portalapi.controllers.pagination.PagedResult;
+import com.example.domain.Item;
 
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Created by leuho02 on 2016-08-04.
+ * Created by hyleung on 2016-08-04.
  */
 public interface ItemDao {
     List<Item> list();

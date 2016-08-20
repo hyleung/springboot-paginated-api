@@ -1,17 +1,15 @@
-package com.ca.portalapi.dao.impl;
+package com.example.dao.impl;
 
-import com.ca.portalapi.dao.ItemDao;
-import com.ca.portalapi.domain.Item;
-import com.ca.portalapi.controllers.pagination.PagedResult;
+import com.example.dao.ItemDao;
+import com.example.domain.Item;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
- * Created by leuho02 on 2016-08-04.
+ * Created by hyleung on 2016-08-04.
  */
 @Component
 public class ItemDaoJDBCImpl implements ItemDao {

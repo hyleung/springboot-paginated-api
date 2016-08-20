@@ -1,20 +1,19 @@
-package com.ca.portalapi.controllers;
+package com.example.controllers;
 
-import com.ca.portalapi.controllers.pagination.NextPageStrategy;
-import com.ca.portalapi.controllers.pagination.PagedResult;
-import com.ca.portalapi.controllers.pagination.PaginationStrategy;
-import com.ca.portalapi.controllers.pagination.PreviousPageStrategy;
-import com.ca.portalapi.dao.ItemDao;
-import com.ca.portalapi.domain.Item;
-import com.ca.portalapi.representations.CreateItemForm;
-import com.ca.portalapi.representations.ItemRep;
+import com.example.controllers.pagination.NextPageStrategy;
+import com.example.controllers.pagination.PagedResult;
+import com.example.controllers.pagination.PaginationStrategy;
+import com.example.controllers.pagination.PreviousPageStrategy;
+import com.example.dao.ItemDao;
+import com.example.domain.Item;
+import com.example.representations.CreateItemForm;
+import com.example.representations.ItemRep;
 import io.codearte.jfairy.Fairy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.hateoas.*;
-import org.springframework.hateoas.core.ControllerEntityLinks;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,7 +28,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 /**
- * Created by leuho02 on 2016-08-08.
+ * Created by hyleung on 2016-08-08.
  */
 @RestController
 @EnableAutoConfiguration
