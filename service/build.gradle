@@ -53,7 +53,7 @@ dependencies {
 mainClassName = "com.example.App"
 
 jar {
-    archiveName = "portal-api.jar"
+    archiveName = "api.jar"
     from configurations.runtime.collect {
         zipTree(it)
     }
