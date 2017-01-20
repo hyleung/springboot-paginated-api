@@ -1,0 +1,4 @@
+api_service:
+  build:
+    image: paginated-api
+    dockerfile_path: Dockerfile
