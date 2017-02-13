@@ -9,6 +9,6 @@ services:
   api:
       image: hyleung/springboot-api
       environment:
-        DB_HOST: "db"
+        MYSQL_SERVICE_HOST: "db"
       ports:
         - "8080:8080"

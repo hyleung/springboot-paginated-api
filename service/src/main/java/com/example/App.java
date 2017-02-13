@@ -21,7 +21,7 @@ import javax.sql.DataSource;
 public class App {
     private static final Logger log = LoggerFactory.getLogger(App.class);
 
-    @Value("${db.host:localhost}")
+    @Value("${mysql.service.host:localhost}")
     private String dbHost;
     @Value("${db.schema:paginationDemo}")
     private String dbSchema;

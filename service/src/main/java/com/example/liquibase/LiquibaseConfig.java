@@ -20,7 +20,7 @@ import java.sql.SQLException;
 public class LiquibaseConfig {
     private static final Logger log = LoggerFactory.getLogger(LiquibaseConfig.class);
 
-    @Value("${db.host:localhost}")
+    @Value("${mysql.service.host:localhost}")
     private String dbHost;
     @Value("${db.schema:paginationDemo}")
     private String dbSchema;

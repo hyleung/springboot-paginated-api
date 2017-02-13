@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1 
+kind: Deployment
+metadata:
+  name: api-deployment
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: springboot-api
+    spec:
+      containers:
+        - name: springboot-api
+          image: hyleung/springboot-api:latest
+          imagePullPolicy: IfNotPresent
