@@ -13,3 +13,9 @@ spec:
         - name: springboot-api
           image: hyleung/springboot-api:latest
           imagePullPolicy: IfNotPresent
+          env:
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: mysql-creds
+                  key: password

@@ -5,7 +5,7 @@ services:
       image: mysql:5.7.14
       container_name: db 
       environment:
-        MYSQL_ROOT_PASSWORD: "secret"
+        DB_PASSWORD: "secret"
   api:
       image: hyleung/springboot-api
       environment:
