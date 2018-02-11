@@ -80,7 +80,8 @@ public class ItemListController {
             }
         });
 
-
+        // Note that "create-form" is an IANA registered link relation
+        // ref. https://tools.ietf.org/html/rfc6861
         result.add(linkTo(methodOn(ItemListController.class).readFormHal()).withRel("create-form"));
 
         return result;
