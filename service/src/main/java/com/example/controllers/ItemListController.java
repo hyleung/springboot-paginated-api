@@ -52,42 +52,34 @@ public class ItemListController {
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaTypes.HAL_JSON_VALUE)
-    public Resources<ItemRep> listHalJson(@RequestParam(value = "pageSize", required = false) Integer pageSize,
+    public Resources<ItemRep> listHalJson(@RequestParam(value = "pageSize", required = false, defaultValue = "5") Integer pageSize,
                                           @RequestParam(value = "lastSeen", required = false) Integer lastSeen,
                                           @RequestParam(value = "action", required = false) String action) throws MalformedURLException, UnsupportedEncodingException {
         Resources<ItemRep> result;
         List<ItemRep> items;
-        if (pageSize == null) {
-            items = dao.list()
-                    .stream()
-                    .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(), item.getDescription()))
-                    .collect(Collectors.toList());
-            result = new Resources<>(items);
-            result.add(linkTo(methodOn(ItemListController.class).listHalJson(null, null, null)).withSelfRel());
-        } else {
-            PaginationStrategy paginationStrategy =
-                    PREVIOUS_ACTION.equals(action) ? new PreviousPageStrategy() : new NextPageStrategy();
-            final PagedResult<Item> paginatedResult = paginationStrategy.getPaginatedResult(dao, pageSize, lastSeen);
-            items = paginatedResult.getResult()
-                    .stream()
-                    .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(), item.getDescription()))
-                    .collect(Collectors.toList());
-            items.forEach(rep -> rep.add(
-                    entityLinks.linkForSingleResource(ItemRep.class, rep.getUUID()).withSelfRel(),
-                    entityLinks.linkForSingleResource(ItemRep.class, rep.getUUID()).withRel("delete")));
-            result = new Resources<>(items);
+        PaginationStrategy paginationStrategy =
+            PREVIOUS_ACTION.equals(action) ? new PreviousPageStrategy() : new NextPageStrategy();
+        final PagedResult<Item> paginatedResult = paginationStrategy.getPaginatedResult(dao, pageSize, lastSeen);
+        items = paginatedResult.getResult()
+                               .stream()
+                               .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(), item.getDescription()))
+                               .collect(Collectors.toList());
+        items.forEach(rep -> rep.add(
+            entityLinks.linkForSingleResource(ItemRep.class, rep.getUUID()).withSelfRel(),
+            entityLinks.linkForSingleResource(ItemRep.class, rep.getUUID()).withRel("delete")));
+        result = new Resources<>(items);
 
-            paginatedResult
-                    .getLinks().forEach(pagedResultLink -> {
-                try {
-                    result.add(linkTo(methodOn(ItemListController.class).listHalJson(pagedResultLink.pageSize,
-                            pagedResultLink.lastSeen,
-                            pagedResultLink.action)).withRel(pagedResultLink.rel));
-                } catch (MalformedURLException | UnsupportedEncodingException e) {
-                    log.error("Error while creating links", e);
-                }
-            });
-        }
+        paginatedResult
+            .getLinks().forEach(pagedResultLink -> {
+            try {
+                result.add(linkTo(methodOn(ItemListController.class).listHalJson(pagedResultLink.pageSize,
+                    pagedResultLink.lastSeen,
+                    pagedResultLink.action)).withRel(pagedResultLink.rel));
+            } catch (MalformedURLException | UnsupportedEncodingException e) {
+                log.error("Error while creating links", e);
+            }
+        });
+
 
         result.add(linkTo(methodOn(ItemListController.class).readFormHal()).withRel("create-form"));
 
