@@ -29,19 +29,14 @@ public class ItemController {
     @Autowired
     private ItemDao dao;
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public ItemRep getJson(@PathVariable("id") final String id) {
-        return dao
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = {MediaTypes.HAL_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public ItemRep get(@PathVariable("id") final String id) {
+        final ItemRep result = dao
                 .get(id)
                 .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(),item.getDescription()))
                 .orElseThrow(ResourceNotFound::new);
-    }
-
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = MediaTypes.HAL_JSON_VALUE)
-    public ItemRep getHalJson(@PathVariable("id") final String id) {
-        final ItemRep result = getJson(id);
         result.add(
-                linkTo(methodOn(ItemController.class).getHalJson(id)).withSelfRel(),
+                linkTo(methodOn(ItemController.class).get(id)).withSelfRel(),
                 linkTo(methodOn(ItemController.class).delete(id)).withRel("delete"));
         return result;
     }

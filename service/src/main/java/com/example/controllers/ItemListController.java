@@ -42,17 +42,9 @@ public class ItemListController {
     EntityLinks entityLinks;
     @Autowired
     private ItemDao dao;
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<ItemRep> listJson() {
-        return dao
-                .list()
-                .stream()
-                .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(), item.getDescription()))
-                .collect(Collectors.toList());
-    }
 
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaTypes.HAL_JSON_VALUE)
-    public Resources<ItemRep> listHalJson(@RequestParam(value = "pageSize", required = false, defaultValue = "5") Integer pageSize,
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = {MediaTypes.HAL_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public Resources<ItemRep> get(@RequestParam(value = "pageSize", required = false, defaultValue = "5") Integer pageSize,
                                           @RequestParam(value = "lastSeen", required = false) Integer lastSeen,
                                           @RequestParam(value = "action", required = false) String action) throws MalformedURLException, UnsupportedEncodingException {
         Resources<ItemRep> result;
@@ -72,7 +64,7 @@ public class ItemListController {
         paginatedResult
             .getLinks().forEach(pagedResultLink -> {
             try {
-                result.add(linkTo(methodOn(ItemListController.class).listHalJson(pagedResultLink.pageSize,
+                result.add(linkTo(methodOn(ItemListController.class).get(pagedResultLink.pageSize,
                     pagedResultLink.lastSeen,
                     pagedResultLink.action)).withRel(pagedResultLink.rel));
             } catch (MalformedURLException | UnsupportedEncodingException e) {
@@ -82,7 +74,7 @@ public class ItemListController {
 
         // Note that "create-form" is an IANA registered link relation
         // ref. https://tools.ietf.org/html/rfc6861
-        result.add(linkTo(methodOn(ItemListController.class).readFormHal()).withRel("create-form"));
+        result.add(linkTo(methodOn(ItemListController.class).getForm()).withRel("create-form"));
 
         return result;
     }
@@ -93,20 +85,19 @@ public class ItemListController {
                 .created(URI.create("/items/" + uuid))
                 .build();
     }
+    @RequestMapping(value = "/form", method = RequestMethod.GET, produces = {MediaTypes.HAL_JSON_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    public CreateItemForm getForm() {
+        final CreateItemForm result = readForm();
+        result.add(linkTo(methodOn(ItemListController.class).create(result)).withRel("create"));
+        return result;
+    }
 
-    @RequestMapping(value = "/form", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public CreateItemForm readForm() {
+    private CreateItemForm readForm() {
         Fairy fairy = Fairy.create();
         String name = String.format("%s-%s", fairy.person().lastName().toLowerCase(), fairy.person().firstName().toLowerCase());
         final CreateItemForm form = new CreateItemForm();
         form.setName(name);
         form.setDescription(String.format("Description of %s", name));
         return form;
-    }
-    @RequestMapping(value = "/form", method = RequestMethod.GET, produces = MediaTypes.HAL_JSON_VALUE)
-    public CreateItemForm readFormHal() {
-        final CreateItemForm result = readForm();
-        result.add(linkTo(methodOn(ItemListController.class).create(result)).withRel("create"));
-        return result;
     }
 }
