@@ -56,11 +56,15 @@ public class ItemListController {
                                .stream()
                                .map(item -> new ItemRep(item.getId(), item.getUuid(), item.getName(), item.getDescription()))
                                .collect(Collectors.toList());
-        items.forEach(rep -> rep.add(
-            entityLinks.linkForSingleResource(ItemRep.class, rep.getUUID()).withSelfRel(),
-            entityLinks.linkForSingleResource(ItemRep.class, rep.getUUID()).withRel("delete")));
         result = new Resources<>(items);
 
+        items.forEach(rep -> {
+                    rep.add(
+                            entityLinks.linkForSingleResource(ItemRep.class, rep.getUUID()).withSelfRel(),
+                            entityLinks.linkForSingleResource(ItemRep.class, rep.getUUID()).withRel("delete"));
+                    result.add(linkTo(methodOn(ItemController.class).get(rep.getUUID())).withRel("item"));
+                }
+        );
         paginatedResult
             .getLinks().forEach(pagedResultLink -> {
             try {
